@@ -10,7 +10,7 @@
         "toolchains": [
             {
                 "repo": "https://github.com/LineageOS/android_prebuilts_clang_kernel_linux-x86_clang-r416183b",
-                "branch": "lineage-20.0",
+                "branch": "lineage-21.0",
                 "name": "clang",
                 "binaryEnv": [
                     "bin"
@@ -59,7 +59,7 @@
             "use": true,
             "release": true
         },
-        "enableKernelSU": true,
+        "enableKernelSU": false,
         "enableLXC": true
     }
 ]
