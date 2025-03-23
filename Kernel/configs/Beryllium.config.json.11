@@ -1,11 +1,11 @@
 [
     {
         "kernelSource": {
-            "name": "Mi CC 9e",
-            "repo": "https://github.com/MiCode/Xiaomi_Kernel_OpenSource",
-            "branch": "laurus-q-oss",
-            "device": "laurus-q-oss",
-            "defconfig": "vendor/wayne_defconfig"
+            "name": "pocof1",
+            "repo": "https://github.com/RONNIE158/android_kernel_beryllium",
+            "branch": "kek_18.1",
+            "device": "beryllium",
+            "defconfig": "kek_defconfig"
         },
         "toolchains": [
             {
