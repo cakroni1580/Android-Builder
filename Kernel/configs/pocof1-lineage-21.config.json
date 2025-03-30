@@ -5,7 +5,7 @@
       "repo": "https://github.com/RONNIE158/RvKernel-Beryllium",
       "branch": "rve",
       "device": "beryllium",
-      "defconfig": "rvkernel_defconfig"
+      "defconfig": "stock-beryllium_defconfig"
     },
     "toolchains": [
       {
