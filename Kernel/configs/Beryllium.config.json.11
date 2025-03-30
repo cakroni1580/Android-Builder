@@ -2,10 +2,10 @@
     {
         "kernelSource": {
             "name": "pocof1",
-            "repo": "https://github.com/RONNIE158/android_kernel_beryllium",
-            "branch": "kek-18.1",
+            "repo": "https://github.com/RONNIE158/android_kernel_xiaomi_sdm845",
+            "branch": "non-ksu",
             "device": "beryllium",
-            "defconfig": "kek_defconfig"
+            "defconfig": "sdm845_defconfig"
         },
         "toolchains": [
             {
