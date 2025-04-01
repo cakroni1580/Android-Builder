@@ -1,7 +1,7 @@
 [
     {
         "kernelSource": {
-            "name": "pocof1 gki",
+            "name": "pocof1-gki",
             "repo": "https://github.com/RONNIE158/linux",
             "branch": "beryllium-mainline",
             "device": "beryllium",
