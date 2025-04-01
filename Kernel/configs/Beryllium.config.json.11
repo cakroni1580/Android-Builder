@@ -1,11 +1,11 @@
 [
     {
         "kernelSource": {
-            "name": "pocof1",
-            "repo": "https://github.com/RONNIE158/android_kernel_xiaomi_sdm845",
-            "branch": "non-ksu",
+            "name": "pocof1 gki",
+            "repo": "https://github.com/RONNIE158/linux",
+            "branch": "beryllium-mainline",
             "device": "beryllium",
-            "defconfig": "sdm845_defconfig"
+            "defconfig": "beryllium_defconfig"
         },
         "toolchains": [
             {
