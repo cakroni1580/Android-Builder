@@ -2,8 +2,8 @@
     {
         "kernelSource": {
             "name": "pocof1",
-            "repo": "https://github.com/RONNIE158/linux",
-            "branch": "beryllium-mainline",
+            "repo": "https://github.com/RONNIE158/D8G_Kernel_old",
+            "branch": "main",
             "device": "beryllium",
             "defconfig": "beryllium_defconfig"
         },
