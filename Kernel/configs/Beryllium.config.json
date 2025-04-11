@@ -3,7 +3,7 @@
         "kernelSource": {
             "name": "pocof1",
             "repo": "https://github.com/RONNIE158/D8G_Kernel_old",
-            "branch": "main",
+            "branch": "13",
             "device": "beryllium",
             "defconfig": "beryllium_defconfig"
         },
