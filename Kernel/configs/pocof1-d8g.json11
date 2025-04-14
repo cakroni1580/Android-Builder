@@ -2,8 +2,8 @@
   {
     "kernelSource": {
       "name": "lineageos-21",
-      "repo": "https://github.com/RONNIE158/D8G_Kernel_old",
-      "branch": "main",
+      "repo": "https://github.com/RONNIE158/linux",
+      "branch": "beryllium-android-5.10",
       "device": "beryllium",
       "defconfig": "beryllium_defconfig"
     },
