@@ -131,6 +131,20 @@ jobs:
           git clone --recursive --depth=1 -j $(nproc) --branch ${{ env.KERNEL_BRANCH }} ${{ env.KERNEL_REPO }} ${{ env.KERNEL_NAME }}
           # tree ${{ env.KERNEL_NAME }}
 
+      - name: 📥 Checkout Lindroid DRM Patch
+        uses: actions/checkout@v4
+        with:
+          repository: Linux-on-droid/lindroid-drm-loopback
+          path: drm-dkms
+
+      - name: 🩹 Apply Lindroid DRM Patch
+        working-directory: ${{ env.KERNEL_NAME }}
+        run: |
+          echo 'obj-y += lindroid-drm/' >> drivers/Makefile
+          echo 'source "drivers/lindroid-drm/Kconfig"' >> drivers/Kconfig
+
+          cp -r ../drm-dkms drivers/lindroid-drm 
+
       - name: 💫 Get toolchains
         env:
           toolchains: "${{ toJSON(matrix.CONFIG.toolchains) }}"
@@ -304,6 +318,16 @@ jobs:
           make ${{ env.ARGS }} ${{ env.KERNEL_DEFCONFIG_PATH }}
           make ${{ env.ARGS }}
           # tree ${{ env.OUT_DIR }}
+
+      - name: Verify Lindroid DRM Build
+        run: |
+          cd kernel
+          if grep -q "AR      drivers/lindroid-drm/built-in.a" build.log; then
+            echo "✅ Lindroid DRM built successfully"
+          else
+            echo "❌ Lindroid DRM NOT built"
+            exit 1
+          fi  
 
       - name: 💛 Upload Image
         uses: actions/upload-artifact@v4
