@@ -191,8 +191,6 @@ jobs:
           grep -i "lindroid" drivers/Makefile || true
           grep -i "lindroid" drivers/Kconfig || true
 
-      # … lanjutkan step toolchain, args, KernelSU, LXC, build, upload, AnyKernel3 seperti versi workflow-mu sebelumnya
-
       - name: 💫 Get toolchains
         env:
           toolchains: "${{ toJSON(matrix.CONFIG.toolchains) }}"
