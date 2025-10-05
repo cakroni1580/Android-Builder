@@ -1,4 +1,4 @@
-name: Build kernels
+name: Build kernels  # boleh ada, tapi sekali saja di root
 
 on:
   push:
@@ -7,7 +7,6 @@ on:
   workflow_dispatch:
   schedule:
     - cron: "14 13 * * 5"
-
 jobs:
   Read-configuration:
     name: 🐂 Parse *.config.json
