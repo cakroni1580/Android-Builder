@@ -115,10 +115,10 @@ jobs:
         working-directory: ${{ env.KERNEL_NAME }}
         continue-on-error: true
         run: |
-          echo "=== DEBUG: drivers/gpu/kgsl-vnc ==="
-          ls -R drivers/gpu/kgsl-vnc || true
-          grep -i "kgsl_vnc" drivers/Makefile || true
-          grep -i "kgsl_vnc" drivers/Kconfig || true  
+          echo "=== DEBUG: drivers/gpu/msm ==="
+          ls -R drivers/gpu/msm || true
+          grep -i "msm" drivers/Makefile || true
+          grep -i "msm" drivers/Kconfig || true  
 
       - name: 💫 Get toolchains
         env:
@@ -316,6 +316,34 @@ jobs:
             echo "=== DEBUG: cari file built-in di output ==="
             find . -name "*kgsl_vnc_display*"
           fi
+
+      - name: ✅ Cek object/built-in driver fb_virtual & uinput_touch
+        working-directory: ${{ env.OUT_DIR }}
+        continue-on-error: true
+        run: |
+          # Path object file untuk module
+          FB_OBJ="../fb_virtual-output/fb_virtual.o"
+          UINPUT_OBJ="../uinput_touch-output/uinput_touch.o"
+
+          # Cek fb_virtual
+          if [ -f "$FB_OBJ" ]; then
+             echo "✅ Object fb_virtual.o berhasil dibuat (modular)"
+             ls -lh ../fb_virtual-output/
+          else
+             echo "⚠️ fb_virtual.o tidak ditemukan, kemungkinan driver sudah langsung built-in kernel"
+             echo "=== DEBUG: cari file built-in fb_virtual ==="
+             find . -name "*fb_virtual*"
+          fi
+
+          # Cek uinput_touch
+          if [ -f "$UINPUT_OBJ" ]; then
+             echo "✅ Object uinput_touch.o berhasil dibuat (modular)"
+             ls -lh ../uinput_touch-output/
+          else
+             echo "⚠️ uinput_touch.o tidak ditemukan, kemungkinan driver sudah langsung built-in kernel"
+             echo "=== DEBUG: cari file built-in uinput_touch ==="
+           find . -name "*uinput_touch*"
+          fi   
 
       - name: 💛 Upload Image
         uses: actions/upload-artifact@v4
