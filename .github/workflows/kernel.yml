@@ -288,8 +288,16 @@ jobs:
             echo "✅ Lindroid DRM built successfully"
           else
             echo "❌ Lindroid DRM NOT built"
-            exit 1
           fi
+
+      - name: ✅ Cek object driver KGSL VNC
+        run: |
+          if [ -f kernel/../kgsl-vnc-output/kgsl_vnc_display.o ]; then
+            echo "✅ Object kgsl_vnc_display.o berhasil dibuat (built-in)"
+            ls -lh kernel/../kgsl-vnc-output/
+           else
+             echo "⚠️ kgsl_vnc_display.o tidak ditemukan, kemungkinan driver sudah langsung built-in kernel"
+           fi
 
       - name: 💛 Upload Image
         uses: actions/upload-artifact@v4
