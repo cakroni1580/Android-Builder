@@ -111,14 +111,6 @@ jobs:
           grep -i "lindroid" drivers/Makefile || true
           grep -i "lindroid" drivers/Kconfig || true
 
-      - name: 🐞 Debug KGSL VNC
-        working-directory: ${{ env.KERNEL_NAME }}
-        continue-on-error: true
-        run: |
-          echo "=== DEBUG: drivers/gpu/msm ==="
-          ls -R drivers/gpu/msm || true
-          grep -i "msm" drivers/Makefile || true
-          grep -i "msm" drivers/Kconfig || true  
 
       - name: 💫 Get toolchains
         env:
@@ -304,15 +296,6 @@ jobs:
          else
             echo "✅ Build succeeded: $BUILD_IMAGE exists"
          fi
-           
-      - name: ✅ Verify Lindroid DRM Build
-        working-directory: ${{ env.KERNEL_NAME }}
-        run: |
-          if grep -q "drivers/lindroid-drm/built-in.a" build.log; then
-            echo "✅ Lindroid DRM built successfully"
-           else
-            echo "❌ Lindroid DRM NOT built"
-          fi
 
       - name: ✅ Cek object/built-in driver KGSL VNC
         working-directory: ${{ env.OUT_DIR }}
