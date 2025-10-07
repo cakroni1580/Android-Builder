@@ -111,6 +111,15 @@ jobs:
           grep -i "lindroid" drivers/Makefile || true
           grep -i "lindroid" drivers/Kconfig || true
 
+      - name: 🐞 Debug KGSL VNC
+        working-directory: ${{ env.KERNEL_NAME }}
+        continue-on-error: true
+        run: |
+          echo "=== DEBUG: drivers/gpu/kgsl-vnc ==="
+          ls -R drivers/gpu/kgsl-vnc || true
+          grep -i "kgsl_vnc" drivers/Makefile || true
+          grep -i "kgsl_vnc" drivers/Kconfig || true  
+
       - name: 💫 Get toolchains
         env:
           toolchains: "${{ toJSON(matrix.CONFIG.toolchains) }}"
