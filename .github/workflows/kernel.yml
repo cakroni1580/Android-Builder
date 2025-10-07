@@ -294,14 +294,16 @@ jobs:
           make ${{ env.ARGS }} | tee build.log
           # tree ${{ env.OUT_DIR }}
 
-      - name: 📝 Verify Image.gz-dtb
+      - name: ✅ Verify build output
         working-directory: ${{ env.KERNEL_NAME }}
         run: |
-           if [ ! -f "${{ env.OUT_DIR }}/Image.gz-dtb" ]; then
-             echo "❌ Build failed: Image.gz-dtb not found!"
-             exit 1
-           fi
-           echo "✅ Image.gz-dtb exists, build successful."
+         BUILD_IMAGE="arch/arm64/boot/Image.gz*"
+         if [ ! -f "$BUILD_IMAGE" ]; then
+            echo "❌ Build failed: $BUILD_IMAGE not found!"
+            exit 1
+         else
+            echo "✅ Build succeeded: $BUILD_IMAGE exists"
+         fi
            
       - name: ✅ Verify Lindroid DRM Build
         working-directory: ${{ env.KERNEL_NAME }}
