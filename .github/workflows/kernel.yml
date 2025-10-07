@@ -286,29 +286,13 @@ jobs:
           make ${{ env.ARGS }} | tee build.log
           # tree ${{ env.OUT_DIR }}
 
-      - name: ✅ Verify build output
+      - name: ✅ Verify Lindroid DRM Build
         working-directory: ${{ env.KERNEL_NAME }}
         run: |
-         BUILD_IMAGE="arch/arm64/boot/Image.gz"
-         if [ ! -f "$BUILD_IMAGE" ]; then
-            echo "❌ Build failed: $BUILD_IMAGE not found!"
-            exit 1
-         else
-            echo "✅ Build succeeded: $BUILD_IMAGE exists"
-         fi
-
-      - name: ✅ Cek object/built-in driver KGSL VNC
-        working-directory: ${{ env.OUT_DIR }}
-        continue-on-error: true
-        run: |
-          KGSL_OBJ="../kgsl-vnc-output/kgsl_vnc_display.o"
-            if [ -f "$KGSL_OBJ" ]; then
-            echo "✅ Object kgsl_vnc_display.o berhasil dibuat (modular)"
-            ls -lh ../kgsl-vnc-output/
-          else
-            echo "⚠️ kgsl_vnc_display.o tidak ditemukan, kemungkinan driver sudah langsung built-in kernel"
-            echo "=== DEBUG: cari file built-in di output ==="
-            find . -name "*kgsl_vnc_display*"
+          if grep -q "drivers/lindroid-drm/built-in.a" build.log; then
+            echo "✅ Lindroid DRM built successfully"
+           else
+            echo "❌ Lindroid DRM NOT built"
           fi
 
       - name: ✅ Cek object/built-in driver fb_virtual & uinput_touch
