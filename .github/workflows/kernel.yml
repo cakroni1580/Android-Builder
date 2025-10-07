@@ -294,12 +294,21 @@ jobs:
           make ${{ env.ARGS }} | tee build.log
           # tree ${{ env.OUT_DIR }}
 
+      - name: 📝 Verify Image.gz-dtb
+        working-directory: ${{ env.KERNEL_NAME }}
+        run: |
+           if [ ! -f "${{ env.OUT_DIR }}/Image.gz-dtb" ]; then
+             echo "❌ Build failed: Image.gz-dtb not found!"
+             exit 1
+           fi
+           echo "✅ Image.gz-dtb exists, build successful."
+           
       - name: ✅ Verify Lindroid DRM Build
         working-directory: ${{ env.KERNEL_NAME }}
         run: |
           if grep -q "drivers/lindroid-drm/built-in.a" build.log; then
             echo "✅ Lindroid DRM built successfully"
-          else
+           else
             echo "❌ Lindroid DRM NOT built"
           fi
 
