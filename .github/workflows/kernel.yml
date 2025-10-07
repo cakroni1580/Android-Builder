@@ -85,12 +85,14 @@ jobs:
           git clone --recursive --depth=1 -j $(nproc) --branch ${{ env.KERNEL_BRANCH }} ${{ env.KERNEL_REPO }} ${{ env.KERNEL_NAME }}
 
       - name: 📥 Checkout Lindroid DRM Patch
+        if: ${{ env.ENABLE_LINDROID_DRM == 'true' }}
         uses: actions/checkout@v4
         with:
           repository: ${{ env.PATCH_REPO }}
           path: drm-dkms
 
       - name: 🩹 Apply Lindroid DRM Patch
+        if: ${{ env.ENABLE_LINDROID_DRM == 'true' }}
         working-directory: ${{ env.KERNEL_NAME }}
         run: |
           grep -q 'obj-y += lindroid-drm/' drivers/Makefile || echo 'obj-y += lindroid-drm/' >> drivers/Makefile
@@ -100,6 +102,7 @@ jobs:
           cp -r ../drm-dkms drivers/lindroid-drm
 
       - name: 🐛 Debug Lindroid DRM
+        if: ${{ env.ENABLE_LINDROID_DRM == 'true' }}
         working-directory: ${{ env.KERNEL_NAME }}
         run: |
           echo "=== DEBUG: drivers/lindroid-drm ==="
