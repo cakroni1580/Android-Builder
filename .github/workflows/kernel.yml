@@ -297,7 +297,7 @@ jobs:
       - name: ✅ Verify build output
         working-directory: ${{ env.KERNEL_NAME }}
         run: |
-         BUILD_IMAGE="arch/arm64/boot/Image.gz*"
+         BUILD_IMAGE="arch/arm64/boot/Image.gz"
          if [ ! -f "$BUILD_IMAGE" ]; then
             echo "❌ Build failed: $BUILD_IMAGE not found!"
             exit 1
