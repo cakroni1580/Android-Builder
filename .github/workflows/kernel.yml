@@ -303,14 +303,19 @@ jobs:
             echo "❌ Lindroid DRM NOT built"
           fi
 
-      - name: ✅ Cek object driver KGSL VNC
+      - name: ✅ Cek object/built-in driver KGSL VNC
+        working-directory: ${{ env.OUT_DIR }}
+        continue-on-error: true
         run: |
-          if [ -f kernel/../kgsl-vnc-output/kgsl_vnc_display.o ]; then
-            echo "✅ Object kgsl_vnc_display.o berhasil dibuat (built-in)"
-            ls -lh kernel/../kgsl-vnc-output/
-           else
-             echo "⚠️ kgsl_vnc_display.o tidak ditemukan, kemungkinan driver sudah langsung built-in kernel"
-           fi
+          KGSL_OBJ="../kgsl-vnc-output/kgsl_vnc_display.o"
+            if [ -f "$KGSL_OBJ" ]; then
+            echo "✅ Object kgsl_vnc_display.o berhasil dibuat (modular)"
+            ls -lh ../kgsl-vnc-output/
+          else
+            echo "⚠️ kgsl_vnc_display.o tidak ditemukan, kemungkinan driver sudah langsung built-in kernel"
+            echo "=== DEBUG: cari file built-in di output ==="
+            find . -name "*kgsl_vnc_display*"
+          fi
 
       - name: 💛 Upload Image
         uses: actions/upload-artifact@v4
