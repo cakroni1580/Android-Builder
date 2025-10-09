@@ -3,7 +3,7 @@
         "kernelSource": {
             "name": "pocof1",
             "repo": "https://github.com/RONNIE158/android_kernel_xiaomi_sdm845",
-            "branch": "lineage-22.2",
+            "branch": "lineage-21",
             "device": "beryllium",
             "defconfig": "beryllium_defconfig"
         },
