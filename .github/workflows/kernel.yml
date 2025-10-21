@@ -58,9 +58,10 @@ jobs:
       ENABLE_LXC: ${{ matrix.CONFIG.enableLXC }}
       ENABLE_LINDROID_DRM: 'false'   # bisa diubah false untuk skip patch
 
-      ENABLE_HALIUM: 'true'  # ubah ke 'true' untuk apply patch Halium 9.0
-      HALIUM_PATCH_REPO: "UBports/community-ports"  # repo Halium patch
-      HALIUM_PATCH_PATH: "android9/xiaomi-poco-f1/kernel-xiaomi-beryllium/halium-9.0"
+      ENABLE_HALIUM: 'true'  # true untuk apply patch Halium 9.0
+      HALIUM_PATCH_REPO: "https://github.com/ubports-beryllium/android_kernel_xiaomi_sdm845.git"
+      HALIUM_PATCH_BRANCH: "halium-9.0"   # pastikan branch Halium 9.0 di repo ini
+      HALIUM_PATCH_PATH: "kernel/patches" # sesuaikan path patch di repo
 
       OUT_DIR: "${{ github.workspace }}/out"
       CCACHE_DIR: "${{ github.workspace }}/ccache"
@@ -117,11 +118,8 @@ jobs:
 
       - name: 📥 Checkout Halium 9.0 Patch
         if: ${{ env.ENABLE_HALIUM == 'true' }}
-        uses: actions/checkout@v4
-        with:
-          repository: ${{ env.HALIUM_PATCH_REPO }}
-          path: halium-9.0
-          ref: main  
+        run: |
+          git clone --depth=1 --branch ${{ env.HALIUM_PATCH_BRANCH }} ${{ env.HALIUM_PATCH_REPO }} halium-9.0  
 
       - name: 🩹 Apply Halium 9.0 Patch
         if: ${{ env.ENABLE_HALIUM == 'true' }}
