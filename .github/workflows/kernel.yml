@@ -125,6 +125,11 @@ jobs:
         if: ${{ env.ENABLE_HALIUM == 'true' }}
         working-directory: ${{ env.KERNEL_NAME }}
         run: |
+          # Set Git identity agar git am bisa jalan di runner
+          git config --global user.email "ci@github.com"
+          git config --global user.name "GitHub CI"
+
+          # Apply patch
           for patch in ../halium-9.0/${{ env.HALIUM_PATCH_PATH }}/*.patch; do
             git am $patch || git am --skip
           done  
