@@ -57,6 +57,7 @@ jobs:
       ENABLE_KERNELSU: ${{ matrix.CONFIG.enableKernelSU }}
       ENABLE_LXC: ${{ matrix.CONFIG.enableLXC }}
       ENABLE_LINDROID_DRM: 'false'   # bisa diubah false untuk skip patch
+      ENABLE_ANBOX: 'true'  # set true untuk apply patch Anbox
 
       OUT_DIR: "${{ github.workspace }}/out"
       CCACHE_DIR: "${{ github.workspace }}/ccache"
@@ -109,7 +110,30 @@ jobs:
           echo "=== DEBUG: drivers/lindroid-drm ==="
           ls -R drivers/lindroid-drm || true
           grep -i "lindroid" drivers/Makefile || true
-          grep -i "lindroid" drivers/Kconfig || true  
+          grep -i "lindroid" drivers/Kconfig || true
+
+      - name: 📥 Checkout Anbox Modules
+        if: ${{ env.ENABLE_ANBOX == 'true' }}
+        run: |
+          git clone --depth=1 https://github.com/anbox/anbox-modules.git anbox-modules
+
+      - name: 🩹 Apply Anbox Modules
+        if: ${{ env.ENABLE_ANBOX == 'true' }}
+        working-directory: ${{ env.KERNEL_NAME }}
+        run: |
+          mkdir -p drivers/anbox
+          cp -r ../anbox-modules/* drivers/anbox/
+          grep -q 'obj-y += anbox/' drivers/Makefile || echo 'obj-y += anbox/' >> drivers/Makefile
+          grep -q 'source "drivers/anbox/Kconfig"' drivers/Kconfig || echo 'source "drivers/anbox/Kconfig"' >> drivers/Kconfig
+
+      - name: 🐛 Debug Anbox Modules
+        if: ${{ env.ENABLE_ANBOX == 'true' }}
+        working-directory: ${{ env.KERNEL_NAME }}
+        run: |
+          echo "=== DEBUG: drivers/anbox ==="
+          ls -R drivers/anbox || true
+          grep -i "anbox" drivers/Makefile || true
+          grep -i "anbox" drivers/Kconfig || true    
 
       - name: 💫 Get toolchains
         env:
