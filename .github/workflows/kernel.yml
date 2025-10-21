@@ -58,11 +58,6 @@ jobs:
       ENABLE_LXC: ${{ matrix.CONFIG.enableLXC }}
       ENABLE_LINDROID_DRM: 'false'   # bisa diubah false untuk skip patch
 
-      ENABLE_HALIUM: 'true'  # true untuk apply patch Halium 9.0
-      HALIUM_PATCH_REPO: "https://github.com/ubports-beryllium/android_kernel_xiaomi_sdm845.git"
-      HALIUM_PATCH_BRANCH: "halium-9.0"   # pastikan branch Halium 9.0 di repo ini
-      HALIUM_PATCH_PATH: "kernel/patches" # sesuaikan path patch di repo
-
       OUT_DIR: "${{ github.workspace }}/out"
       CCACHE_DIR: "${{ github.workspace }}/ccache"
 
@@ -114,26 +109,7 @@ jobs:
           echo "=== DEBUG: drivers/lindroid-drm ==="
           ls -R drivers/lindroid-drm || true
           grep -i "lindroid" drivers/Makefile || true
-          grep -i "lindroid" drivers/Kconfig || true
-
-      - name: 📥 Checkout Halium 9.0 Patch
-        if: ${{ env.ENABLE_HALIUM == 'true' }}
-        run: |
-          git clone --depth=1 --branch ${{ env.HALIUM_PATCH_BRANCH }} ${{ env.HALIUM_PATCH_REPO }} halium-9.0  
-
-      - name: 🩹 Apply Halium 9.0 Patch
-        if: ${{ env.ENABLE_HALIUM == 'true' }}
-        working-directory: ${{ env.KERNEL_NAME }}
-        run: |
-          # Set Git identity agar git am bisa jalan di runner
-          git config --global user.email "ci@github.com"
-          git config --global user.name "GitHub CI"
-
-          # Apply patch
-          for patch in ../halium-9.0/${{ env.HALIUM_PATCH_PATH }}/*.patch; do
-            git am $patch || git am --skip
-          done  
-
+          grep -i "lindroid" drivers/Kconfig || true  
 
       - name: 💫 Get toolchains
         env:
