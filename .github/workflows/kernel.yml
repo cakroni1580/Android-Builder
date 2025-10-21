@@ -58,6 +58,10 @@ jobs:
       ENABLE_LXC: ${{ matrix.CONFIG.enableLXC }}
       ENABLE_LINDROID_DRM: 'false'   # bisa diubah false untuk skip patch
 
+      ENABLE_HALIUM: 'true'  # ubah ke 'true' untuk apply patch Halium 9.0
+      HALIUM_PATCH_REPO: "UBports/community-ports"  # repo Halium patch
+      HALIUM_PATCH_PATH: "android9/xiaomi-poco-f1/kernel-xiaomi-beryllium/halium-9.0"
+
       OUT_DIR: "${{ github.workspace }}/out"
       CCACHE_DIR: "${{ github.workspace }}/ccache"
 
@@ -110,6 +114,22 @@ jobs:
           ls -R drivers/lindroid-drm || true
           grep -i "lindroid" drivers/Makefile || true
           grep -i "lindroid" drivers/Kconfig || true
+
+      - name: 📥 Checkout Halium 9.0 Patch
+        if: ${{ env.ENABLE_HALIUM == 'true' }}
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.HALIUM_PATCH_REPO }}
+          path: halium-9.0
+          ref: main  
+
+      - name: 🩹 Apply Halium 9.0 Patch
+        if: ${{ env.ENABLE_HALIUM == 'true' }}
+        working-directory: ${{ env.KERNEL_NAME }}
+        run: |
+          for patch in ../halium-9.0/${{ env.HALIUM_PATCH_PATH }}/*.patch; do
+            git am $patch || git am --skip
+          done  
 
 
       - name: 💫 Get toolchains
