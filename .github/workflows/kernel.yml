@@ -43,7 +43,7 @@ jobs:
     env:
       WORKSPACE: ${{ github.workspace }}
       BUILD_DATE: "${{ needs.Read-configuration.outputs.BUILD_DATE }}"
-      PATCH_REPO: "RealJohnGalt/lindroid-drm-loopback"
+      PATCH_REPO: "cakroni1580/lindroid-drm-loopback"
 
       KERNEL_NAME: ${{ matrix.CONFIG.kernelSource.name }}
       KERNEL_REPO: ${{ matrix.CONFIG.kernelSource.repo }}
