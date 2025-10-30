@@ -2,8 +2,8 @@
     {
         "kernelSource": {
             "name": "pocof1",
-            "repo": "https://github.com/cakroni1580/android_kernel_xiaomi_sdm845",
-            "branch": "lineage-21",
+            "repo": "https://github.com/Linux-On-LineageOS/android_kernel_nubia_sdm845",
+            "branch": "lineage-22.1",
             "device": "beryllium",
             "defconfig": "beryllium_defconfig"
         },
