@@ -5,7 +5,7 @@
             "repo": "https://github.com/Linux-On-LineageOS/android_kernel_nubia_sdm845",
             "branch": "lineage-22.1",
             "device": "beryllium",
-            "defconfig": "beryllium_defconfig"
+            "defconfig": "sdm845_defconfig"
         },
         "toolchains": [
             {
