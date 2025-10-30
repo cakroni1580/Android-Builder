@@ -56,7 +56,7 @@ jobs:
       CONFIRM_RELEASE: ${{ matrix.CONFIG.AnyKernel3.release }}
       ENABLE_KERNELSU: ${{ matrix.CONFIG.enableKernelSU }}
       ENABLE_LXC: ${{ matrix.CONFIG.enableLXC }}
-      ENABLE_LINDROID_DRM: 'true'   # bisa diubah false untuk skip patch
+      ENABLE_LINDROID_DRM: 'false'   # bisa diubah false untuk skip patch
 
       OUT_DIR: "${{ github.workspace }}/out"
       CCACHE_DIR: "${{ github.workspace }}/ccache"
