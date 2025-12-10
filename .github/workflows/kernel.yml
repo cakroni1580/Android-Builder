@@ -112,8 +112,8 @@ jobs:
           grep -i "lindroid" drivers/Makefile || true
           grep -i "lindroid" drivers/Kconfig || true
 
-      - name: Apply binderfs backport (conditional)
-        if: env.ENABLE_BINDERFS_BACKPORT == 'true'
+      - name: 📥 Apply binderfs backport (conditional)
+        if: ${{ env.ENABLE_BINDERFS_BACKPORT == 'true' }}
         run: |
           echo "=== ENABLE_BINDERFS_BACKPORT = TRUE ==="
           echo "Cloning binderfs backport repo..."
