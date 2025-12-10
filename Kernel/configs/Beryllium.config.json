@@ -61,6 +61,5 @@
         },
         "enableKernelSU": false,
         "enableLXC": true
-        "enableBinderfs": true
     }
 ]
