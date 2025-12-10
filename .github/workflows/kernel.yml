@@ -74,7 +74,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y curl git wget unzip tar bzip2 python3 make gcc bc ccache libssl-dev build-essential device-tree-compiler
-
+      
       - name: 🚄 Setup ccache
         if: ${{ env.ENABLE_CCACHE == 'true' }}
         run: |
@@ -111,6 +111,30 @@ jobs:
           grep -i "lindroid" drivers/Makefile || true
           grep -i "lindroid" drivers/Kconfig || true
 
+      - name: Apply binderfs backport (conditional)
+        if: matrix.config.ENABLE_BINDERFS_BACKPORT == 'true'
+        run: |
+          echo "=== ENABLE_BINDERFS_BACKPORT = TRUE ==="
+          echo "Cloning binderfs backport repo..."
+          git clone https://github.com/purplepalmdash/binderfs_backport.git binderfs
+
+          echo "Backup original drivers/android & include/uapi/linux/android..."
+          rm -rf drivers/android.bak
+          rm -rf include/uapi/linux/android.bak
+          mv drivers/android drivers/android.bak
+          mv include/uapi/linux/android include/uapi/linux/android.bak
+
+          echo "Applying binderfs driver replacement..."
+          rm -rf drivers/android
+          cp -r binderfs/android drivers/
+
+          echo "Applying binderfs include/uapi replacement..."
+          rm -rf include/uapi/linux/android
+          mkdir -p include/uapi/linux/android
+          cp -r binderfs/include/android/android/* include/uapi/linux/android/
+
+          echo "Binderfs backport applied successfully for this build."
+      
       - name: 📥 Checkout Anbox Modules
         if: ${{ env.ENABLE_ANBOX == 'true' }}
         run: |
