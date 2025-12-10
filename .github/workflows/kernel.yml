@@ -57,7 +57,7 @@ jobs:
       ENABLE_KERNELSU: ${{ matrix.CONFIG.enableKernelSU }}
       ENABLE_LXC: ${{ matrix.CONFIG.enableLXC }}
       ENABLE_LINDROID_DRM: 'false' # bisa diubah false untuk skip patch
-      ENABLE_BINDERFS_BACKPORT: 'true'
+      ENABLE_BINDERFS_BACKPORT: 'false'
 
       OUT_DIR: "${{ github.workspace }}/out"
       CCACHE_DIR: "${{ github.workspace }}/ccache"
@@ -328,7 +328,7 @@ jobs:
           fi
 
       - name: ✅ Cek object/built-in driver fb_virtual & uinput_touch
-        working-directory: ${{ env.OUT_DIR }}
+        working-directory: ${{ env.KERNEL_NAME }}
         continue-on-error: true
         run: |
           # Path object file untuk module
