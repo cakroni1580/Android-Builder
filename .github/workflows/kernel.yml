@@ -114,6 +114,7 @@ jobs:
 
       - name: 📥 Apply binderfs backport (conditional)
         if: ${{ env.ENABLE_BINDERFS_BACKPORT == 'true' }}
+        working-directory: ${{ env.KERNEL_NAME }}
         run: |
           echo "=== ENABLE_BINDERFS_BACKPORT = TRUE ==="
           echo "Cloning binderfs backport repo..."
