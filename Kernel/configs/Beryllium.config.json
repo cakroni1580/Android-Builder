@@ -5,7 +5,7 @@
             "repo": "https://github.com/cakroni1580/android_kernel_xiaomi_sdm845_419",
             "branch": "lineage-23.0_xiaomi-lindroid",
             "device": "beryllium",
-            "defconfig": "sdm845-perf_defconfig"
+            "defconfig": "beryllium_defconfig"
         },
         "toolchains": [
             {
