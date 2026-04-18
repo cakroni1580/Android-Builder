@@ -61,6 +61,6 @@
         },
         "enableKernelSU": false,
         "enableLXC": true,
-        "enableSyslimlik": true
+        "enableSyslimlik": false
     }
 ]
