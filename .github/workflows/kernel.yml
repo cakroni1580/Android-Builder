@@ -126,20 +126,38 @@ jobs:
         run: |
           echo "=== APPLY SYSLIMLIK PATCH ==="
 
-          # copy patch files
-          cp -r ../syslimlik/Beryllium_419/* .
+          # set git identity (WAJIB buat git am)
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
 
-          # kalau patch pakai git format
-          if ls ../syslimlik/Beryllium_419/*.patch 1> /dev/null 2>&1; then
-            git am ../syslimlik/Beryllium_419/*.patch || {
-              echo "❌ git am failed, fallback patch -p1"
-              for p in ../syslimlik/Beryllium_419/*.patch; do
-                patch -p1 < "$p"
-              done
-            }
-          fi
+          PATCH_DIR="../syslimlik/Beryllium_419"
 
-          echo "✅ Syslimlik patch applied"   
+          # apply hanya kalau belum ada marker (biar idempotent)
+          if [ ! -f ".syslimlik_applied" ]; then
+
+            if ls $PATCH_DIR/*.patch >/dev/null 2>&1; then
+              echo "Applying patch via git am..."
+
+              git am $PATCH_DIR/*.patch || {
+                echo "git am gagal → fallback patch"
+
+                # abort state kalau setengah jalan
+                git am --abort || true
+
+                for p in $PATCH_DIR/*.patch; do
+                  patch -p1 -N < "$p" || true
+                done
+             }
+           else
+             echo "No patch file, fallback copy..."
+              cp -r $PATCH_DIR/* .
+           fi
+
+           touch .syslimlik_applied
+           echo "✅ Syslimlik applied (first time)"
+          else
+            echo "⚠️ Syslimlik already applied, skip"
+          fi   
 
       - name: 📥 Apply binderfs backport (conditional)
         if: ${{ env.ENABLE_BINDERFS_BACKPORT == 'true' }}
