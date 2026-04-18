@@ -339,6 +339,22 @@ jobs:
             echo "🎖️ Apply xt_qtaguid.patch"
           fi
 
+      - name: 🛠️ Fix broken Kconfig (mi845)
+        working-directory: ${{ env.KERNEL_NAME }}
+        run: |
+          echo "=== FIX KCONFIG MI845 ==="
+
+          if grep -q 'techpack/mi845/Kconfig' techpack/Kconfig; then
+            echo "⚠️ Missing mi845 Kconfig detected"
+
+            # opsi 1: comment (paling aman)
+            sed -i 's|source "techpack/mi845/Kconfig"|# source "techpack/mi845/Kconfig"|g' techpack/Kconfig
+
+            echo "✅ Kconfig reference disabled"
+          else
+            echo "✔️ No issue"
+          fi    
+
       - name: 👍 Start building the kernel
         working-directory: ${{ env.KERNEL_NAME }}
         env:
