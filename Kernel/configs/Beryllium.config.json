@@ -60,7 +60,7 @@
             "release": false
         },
         "enableKernelSU": false,
-        "enableLXC": true
+        "enableLXC": true,
         "enableSyslimlik": true
     }
 ]
