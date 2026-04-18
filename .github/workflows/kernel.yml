@@ -58,6 +58,7 @@ jobs:
       ENABLE_LXC: ${{ matrix.CONFIG.enableLXC }}
       ENABLE_LINDROID_DRM: 'true' # bisa diubah false untuk skip patch
       ENABLE_BINDERFS_BACKPORT: 'false'
+      ENABLE_SYSLIMLIK: ${{ matrix.CONFIG.enableSyslimlik }}
 
       OUT_DIR: "${{ github.workspace }}/out"
       CCACHE_DIR: "${{ github.workspace }}/ccache"
@@ -111,6 +112,34 @@ jobs:
           ls -R drivers/lindroid-drm || true
           grep -i "lindroid" drivers/Makefile || true
           grep -i "lindroid" drivers/Kconfig || true
+
+      - name: 📥 Checkout Syslimlik Patch
+        if: ${{ env.ENABLE_SYSLIMLIK == 'true' }}
+        uses: actions/checkout@v4
+        with:
+          repository: duckyduckG/kernel_patches
+          path: syslimlik
+
+      - name: 🩹 Apply Syslimlik Patch
+        if: ${{ env.ENABLE_SYSLIMLIK == 'true' }}
+        working-directory: ${{ env.KERNEL_NAME }}
+        run: |
+          echo "=== APPLY SYSLIMLIK PATCH ==="
+
+          # copy patch files
+          cp -r ../syslimlik/Beryllium_419/* .
+
+          # kalau patch pakai git format
+          if ls ../syslimlik/Beryllium_419/*.patch 1> /dev/null 2>&1; then
+            git am ../syslimlik/Beryllium_419/*.patch || {
+              echo "❌ git am failed, fallback patch -p1"
+              for p in ../syslimlik/Beryllium_419/*.patch; do
+                patch -p1 < "$p"
+              done
+            }
+          fi
+
+          echo "✅ Syslimlik patch applied"   
 
       - name: 📥 Apply binderfs backport (conditional)
         if: ${{ env.ENABLE_BINDERFS_BACKPORT == 'true' }}
