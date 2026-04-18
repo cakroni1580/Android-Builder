@@ -124,37 +124,61 @@ jobs:
         if: ${{ env.ENABLE_SYSLIMLIK == 'true' }}
         working-directory: ${{ env.KERNEL_NAME }}
         run: |
-          echo "=== APPLY SYSLIMLIK PATCH ==="
+          echo "=== APPLY SYSLIMLIK PATCH (ROBUST) ==="
 
-          # set git identity (WAJIB buat git am)
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
 
           PATCH_DIR="../syslimlik/Beryllium_419"
 
-          # apply hanya kalau belum ada marker (biar idempotent)
-          if [ ! -f ".syslimlik_applied" ]; then
-
-            if ls $PATCH_DIR/*.patch >/dev/null 2>&1; then
-              echo "Applying patch via git am..."
-
-              git am $PATCH_DIR/*.patch || {
-                echo "git am gagal → fallback patch"
-
-                # abort state kalau setengah jalan
-                git am --abort || true
-
-                for p in $PATCH_DIR/*.patch; do
-                  patch -p1 -N < "$p" || true
-                done
-             }
-           else
-             echo "No patch file, fallback copy..."
-              cp -r $PATCH_DIR/* .
+          if [ ! -d "$PATCH_DIR" ]; then
+             echo "❌ Patch dir tidak ditemukan"
+             exit 1
            fi
 
-           touch .syslimlik_applied
-           echo "✅ Syslimlik applied (first time)"
+          if [ ! -f ".syslimlik_applied" ]; then
+
+           if ls $PATCH_DIR/*.patch >/dev/null 2>&1; then
+              echo "➡️ Applying patches one-by-one..."
+
+              for p in $PATCH_DIR/*.patch; do
+               echo "----"
+               echo "PATCH: $p"
+
+               # ✅ cek apakah sudah pernah diaplikasikan
+               if git apply --reverse --check "$p" > /dev/null 2>&1; then
+                 echo "⏭️ SKIP (already applied)"
+                 continue
+               fi
+
+               # ✅ coba git am (cleanest)
+                git am "$p" 2>/dev/null
+                if [ $? -eq 0 ]; then
+                 echo "✅ git am success"
+                 continue
+                fi
+
+                # reset state kalau gagal
+                git am --abort 2>/dev/null || true
+
+               # ✅ fallback patch dengan proteksi
+               patch -p1 --forward --fuzz=3 < "$p"
+                if [ $? -eq 0 ]; then
+                 echo "⚠️ applied with fuzz"
+                 continue
+                fi
+
+                echo "❌ FAILED → skip (biar build lanjut)"
+              done
+
+            else
+             echo "⚠️ No patch file → fallback copy"
+              cp -r $PATCH_DIR/* .
+            fi
+
+            touch .syslimlik_applied
+            echo "✅ Syslimlik patch process done"
+
           else
             echo "⚠️ Syslimlik already applied, skip"
           fi   
