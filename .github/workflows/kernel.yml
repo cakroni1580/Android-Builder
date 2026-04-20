@@ -447,7 +447,8 @@ jobs:
           if [ "${USE_CUSTOM_TOOLCHAIN}" = "true" ]; then
             echo "=== BUILD WITH CUSTOM TOOLCHAIN ==="
 
-          export CC="${CLANG_ROOT}/bin/clang"
+          export HOSTCC=gcc
+          export HOSTCXX=g++
           export CROSS_COMPILE="${GCC_ROOT}/bin/aarch64-none-linux-gnu-"
           export CROSS_COMPILE_ARM32="${GCC_ROOT}/bin/arm-none-linux-gnueabihf-"
           export CLANG_TRIPLE="aarch64-none-linux-gnu-"
