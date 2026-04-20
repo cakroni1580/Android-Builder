@@ -57,9 +57,8 @@ jobs:
       ENABLE_KERNELSU: ${{ matrix.CONFIG.enableKernelSU }}
       ENABLE_LXC: ${{ matrix.CONFIG.enableLXC }}
       ENABLE_LINDROID_DRM: 'true' # bisa diubah false untuk skip patch
-      ENABLE_BINDERFS_BACKPORT: 'false'
       ENABLE_SYSLIMLIK: ${{ matrix.CONFIG.enableSyslimlik }}
-      USE_CUSTOM_TOOLCHAIN: 'true'
+      USE_CUSTOM_TOOLCHAIN: 'false'
 
       OUT_DIR: "${{ github.workspace }}/out"
       CCACHE_DIR: "${{ github.workspace }}/ccache"
