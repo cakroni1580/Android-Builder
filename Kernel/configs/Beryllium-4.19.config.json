@@ -9,8 +9,8 @@
         },
         "toolchains": [
             {
-                "repo": "https://github.com/LineageOS/android_prebuilts_clang_kernel_linux-x86_clang-r416183b",
-                "branch": "lineage-20.0",
+                "repo": "https://github.com/ravindu644/Android-Kernel-Tutorials/releases/download/toolchains/clang-r353983c.tar.gz",
+                "branch": "local",
                 "name": "clang",
                 "binaryEnv": [
                 "bin"
