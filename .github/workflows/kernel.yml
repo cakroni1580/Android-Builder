@@ -176,7 +176,7 @@ jobs:
             echo "⚠️ Syslimlik already applied, skip"
           fi   
 
-      - name: 🧰 Get custom toolchain
+      - name: 🧰 Get custom toolchains
         if: ${{ env.USE_CUSTOM_TOOLCHAIN == 'true' }}
         run: |
           echo "=== CUSTOM TOOLCHAIN ENABLED ==="
@@ -197,8 +197,15 @@ jobs:
           tar -xf gcc.tar.xz -C gcc
           rm -f gcc.tar.xz
 
-          CLANG_ROOT=$(find $TOOLCHAIN_DIR/clang -type d -name bin | head -n1 | sed 's|/bin||')
+          CLANG_ROOT="${TOOLCHAIN_DIR}/clang"
           GCC_ROOT=$(find $TOOLCHAIN_DIR/gcc -type f -name aarch64-none-linux-gnu-gcc | head -n1 | sed 's|/bin/aarch64-none-linux-gnu-gcc||')
+
+          echo "CLANG_ROOT=$CLANG_ROOT"
+          echo "GCC_ROOT=$GCC_ROOT"
+
+          # VALIDASI (biar fail cepat kalau salah)
+          ls -l $CLANG_ROOT/bin/clang || exit 1
+          ls -l $GCC_ROOT/bin/aarch64-none-linux-gnu-gcc || exit 1
 
           echo "$CLANG_ROOT/bin" >> $GITHUB_PATH
           echo "$GCC_ROOT/bin" >> $GITHUB_PATH
