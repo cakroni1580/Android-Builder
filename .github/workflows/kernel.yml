@@ -59,6 +59,7 @@ jobs:
       ENABLE_LINDROID_DRM: 'true' # bisa diubah false untuk skip patch
       ENABLE_BINDERFS_BACKPORT: 'false'
       ENABLE_SYSLIMLIK: ${{ matrix.CONFIG.enableSyslimlik }}
+      USE_CUSTOM_TOOLCHAIN: 'true'
 
       OUT_DIR: "${{ github.workspace }}/out"
       CCACHE_DIR: "${{ github.workspace }}/ccache"
@@ -175,7 +176,38 @@ jobs:
             echo "⚠️ Syslimlik already applied, skip"
           fi   
 
+      - name: 🧰 Setup custom toolchain
+        if: ${{ env.USE_CUSTOM_TOOLCHAIN == 'true' }}
+        run: |
+          echo "=== CUSTOM TOOLCHAIN ENABLED ==="
+
+          TOOLCHAIN_DIR=${{ env.WORKSPACE }}/toolchains
+          mkdir -p $TOOLCHAIN_DIR
+          cd $TOOLCHAIN_DIR
+
+          # clang
+          wget -O clang.tar.gz https://github.com/ravindu644/Android-Kernel-Tutorials/releases/download/toolchains/clang-r353983c.tar.gz
+          mkdir -p clang
+          tar -xzf clang.tar.gz -C clang
+          rm -f clang.tar.gz
+
+          # gcc
+          wget -O gcc.tar.xz https://developer.arm.com/-/media/Files/downloads/gnu/14.2.rel1/binrel/arm-gnu-toolchain-14.2.rel1-x86_64-aarch64-none-linux-gnu.tar.xz
+          mkdir -p gcc
+          tar -xf gcc.tar.xz -C gcc
+          rm -f gcc.tar.xz
+
+          CLANG_ROOT=$(find $TOOLCHAIN_DIR/clang -type d -name bin | head -n1 | sed 's|/bin||')
+          GCC_ROOT=$(find $TOOLCHAIN_DIR/gcc -type f -name aarch64-none-linux-gnu-gcc | head -n1 | sed 's|/bin/aarch64-none-linux-gnu-gcc||')
+
+          echo "$CLANG_ROOT/bin" >> $GITHUB_PATH
+          echo "$GCC_ROOT/bin" >> $GITHUB_PATH
+
+          echo "CLANG_ROOT=$CLANG_ROOT" >> $GITHUB_ENV
+          echo "GCC_ROOT=$GCC_ROOT" >> $GITHUB_ENV
+     
       - name: 💫 Get toolchains
+        if: ${{ env.USE_CUSTOM_TOOLCHAIN != 'true' }}
         env:
           toolchains: "${{ toJSON(matrix.CONFIG.toolchains) }}"
         run: |
@@ -233,6 +265,7 @@ jobs:
             done
           done
 
+         
       - name: 😎 Set build args
         id: generate-args
         env:
@@ -242,34 +275,70 @@ jobs:
           echo "🤔 PATH Variable: $PATH"
 
           ARCH=$(echo $PARAMS | jq -r ".ARCH")
-          CC=$(echo $PARAMS | jq -r ".CC")
 
-          args="-j${{ env.THREAD }} O=${{ env.OUT_DIR }} ARCH=$ARCH"
-          if [ -n "$CC" ]; then
+          # =========================
+          # CUSTOM TOOLCHAIN MODE
+          # =========================
+          if [ "${USE_CUSTOM_TOOLCHAIN}" = "true" ]; then
+            echo "=== USING CUSTOM TOOLCHAIN ==="
+ 
+            CC="${CLANG_ROOT}/bin/clang"
 
-            if [[ "$CC" == *"/"* ]]; then
-              CC=${{ env.WORKSPACE }}/$CC
-            fi
+            args="-j${{ env.THREAD }} O=${{ env.OUT_DIR }} ARCH=$ARCH"
 
             if [ ${{ env.ENABLE_CCACHE }} = true ]; then
               args="$args CC=\"ccache $CC\""
             else
               args="$args CC=$CC"
             fi
-          fi
-          while read -r externalCommand; do
-            key=$(echo "$externalCommand" | cut -d= -f1)
-            value=$(echo "$externalCommand" | cut -d= -f2)
-            if [[ "$value" == *"/"* ]]; then
-              value="${{ env.WORKSPACE }}/$value"
+
+            args="$args \
+            CROSS_COMPILE=${GCC_ROOT}/bin/aarch64-none-linux-gnu- \
+            CROSS_COMPILE_ARM32=${GCC_ROOT}/bin/arm-none-linux-gnueabihf- \
+            CLANG_TRIPLE=aarch64-none-linux-gnu- \
+            LD=ld.lld \
+            AR=llvm-ar \
+            NM=llvm-nm \
+            OBJCOPY=llvm-objcopy \
+            OBJDUMP=llvm-objdump \
+            STRIP=llvm-strip"
+
+            # =========================
+            # DEFAULT JSON MODE
+            # =========================
+            else
+              echo "=== USING JSON TOOLCHAIN ==="
+
+              CC=$(echo $PARAMS | jq -r ".CC")
+
+              args="-j${{ env.THREAD }} O=${{ env.OUT_DIR }} ARCH=$ARCH"
+
+              if [ -n "$CC" ]; then
+                if [[ "$CC" == *"/"* ]]; then
+                  CC=${{ env.WORKSPACE }}/$CC
+              fi
+
+              if [ ${{ env.ENABLE_CCACHE }} = true ]; then
+                args="$args CC=\"ccache $CC\""
+                  else
+                  args="$args CC=$CC"
+                fi
+              fi
+
+               while read -r externalCommand; do
+                 key=$(echo "$externalCommand" | cut -d= -f1)
+                 value=$(echo "$externalCommand" | cut -d= -f2)
+                 if [[ "$value" == *"/"* ]]; then
+                   value="${{ env.WORKSPACE }}/$value"
+                 fi
+                 args="$args $key=$value"
+               done < <(jq -r '.externalCommands | to_entries[] | "\(.key)=\(.value)"' <<< "$PARAMS")
             fi
-            args="$args $key=$value"
-          done < <(jq -r '.externalCommands | to_entries[] | "\(.key)=\(.value)"' <<< "$PARAMS")
 
-          echo "ARCH=$ARCH" >> $GITHUB_OUTPUT
-          echo "ARGS=$args" >> $GITHUB_OUTPUT
+            echo "ARCH=$ARCH" >> $GITHUB_OUTPUT
+            echo "ARGS=$args" >> $GITHUB_OUTPUT
 
-          echo "🤔 $args"
+            echo "🤔 FINAL ARGS: $args"
 
       - name: 😋 Setup KernelSU
         working-directory: ${{ env.KERNEL_NAME }}
